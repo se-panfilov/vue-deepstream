@@ -1,0 +1,26 @@
+{
+  "private": true,
+  "name": "vue-deepstream",
+  "version": "0.1.0",
+  "description": "Deepstream plugin for Vue.js",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/arexio/vue-deepstream.git"
+  },
+  "keywords": [
+    "vue",
+    "vuejs",
+    "deepstream",
+    "mvvm"
+  ],
+  "author": "Eduardo Alves",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/arexio/vue-deepstream/issues"
+  },
+  "homepage": "https://github.com/arexio/vue-deepstream#readme"
+}
