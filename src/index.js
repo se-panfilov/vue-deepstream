@@ -2,6 +2,7 @@ import ds from 'deepstream.io-client-js'
 import util, { warn } from './utils'
 import override from './override'
 
+// let ds
 let Vue
 
 class Deepstream {
