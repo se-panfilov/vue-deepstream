@@ -2,9 +2,6 @@ var path = require('path')
 var webpack = require('webpack')
 var merge = require('webpack-merge')
 var baseConfig = require('./webpack.base.conf')
-var cssLoaders = require('./css-loaders')
-var ExtractTextPlugin = require('extract-text-webpack-plugin')
-var HtmlWebpackPlugin = require('html-webpack-plugin')
 
 // whether to generate source map for production files.
 // disabling this can speed up the build.
@@ -19,7 +16,7 @@ module.exports = merge(baseConfig, {
     library: 'VueDeepstream',
     libraryTarget: 'umd'
   },
-  externals: [
+  externals: [
     {
       'deepstream.io-client-js': true
     }
@@ -28,7 +25,7 @@ module.exports = merge(baseConfig, {
     // http://vuejs.github.io/vue-loader/workflow/production.html
     new webpack.DefinePlugin({
       'process.env': {
-        NODE_ENV: JSON.stringify("production")
+        NODE_ENV: JSON.stringify('production')
       }
     }),
     new webpack.optimize.UglifyJsPlugin({
