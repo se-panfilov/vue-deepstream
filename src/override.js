@@ -6,7 +6,29 @@ export default function (Vue) {
     options.init = options.init
       ? [dsInit].concat(options.init)
       : dsInit
+
     _init.call(this, options)
+  }
+
+  const _destroy = Vue.prototype._destroy
+  Vue.prototype._destroy = function () {
+    if (this.$_ds) {
+      const { on, once } = this.$_ds
+
+      if (on) {
+        for (let event in on) {
+          this.$ds.client.off(event, on[event])
+        }
+      }
+
+      if (once) {
+        for (let event in once) {
+          this.$ds.client.off(event, once[event])
+        }
+      }
+    }
+
+    _destroy.apply(this, arguments)
   }
 
   function dsInit () {
@@ -25,17 +47,28 @@ export default function (Vue) {
         warn('deepstream not injected. Make sure to provide deepstream option in yout root component.')
       }
 
+      this.$_ds = {}
+
       let { on, once, emit } = ds
+      const _this = this
 
       if (on) {
+        this.$_ds.on = {}
         for (let event in on) {
-          boundListener.call(this, 'on', event, on[event])
+          this.$_ds.on[event] = function () {
+            on[event].apply(_this, arguments)
+          }
+          this.$ds.client.on(event, this.$_ds.on[event])
         }
       }
 
       if (once) {
+        this.$_ds.once = {}
         for (let event in once) {
-          boundListener.call(this, 'once', event, once[event])
+          this.$_ds.once[event] = function () {
+            once[event].apply(_this, arguments)
+          }
+          this.$ds.client.once(event, this.$_ds.once[event])
         }
       }
 
@@ -46,12 +79,6 @@ export default function (Vue) {
         }
       }
     }
-  }
-
-  function boundListener (listenerType, event, callback) {
-    this.$ds.client[listenerType](event, (...args) => {
-      callback.call(this, ...args)
-    })
   }
 
   function makeBoundEmit (event, emit, ds) {
