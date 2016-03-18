@@ -7,12 +7,11 @@ var baseConfig = require('./webpack.base.conf')
 // disabling this can speed up the build.
 var SOURCE_MAP = true
 
-module.exports = merge(baseConfig, {
-  devtool: SOURCE_MAP ? '#source-map' : false,
+var unminified = merge(baseConfig, {
+  devtool: false,
   output: {
     path: path.join(__dirname, '../dist'),
-    filename: 'vue-deepstream.min.js',
-    sourceMapFilename: '[file].map',
+    filename: 'vue-deepstream.js',
     library: 'VueDeepstream',
     libraryTarget: 'umd'
   },
@@ -27,7 +26,17 @@ module.exports = merge(baseConfig, {
       'process.env': {
         NODE_ENV: JSON.stringify('production')
       }
-    }),
+    })
+  ]
+})
+
+var minified = merge(unminified, {
+  devtool: SOURCE_MAP ? '#source-map' : false,
+  output: {
+    filename: 'vue-deepstream.min.js',
+    sourceMapFilename: '[file].map'
+  },
+  plugins: [
     new webpack.optimize.UglifyJsPlugin({
       compress: {
         warnings: false
@@ -35,3 +44,8 @@ module.exports = merge(baseConfig, {
     })
   ]
 })
+
+module.exports = {
+  unminified,
+  minified
+}

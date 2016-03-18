@@ -17,12 +17,13 @@ gulp.task('webpack-dev-server', function () {
   })
 })
 
-// Production build
-gulp.task('build', function (cb) {
+// Build tasks
+gulp.task('build', function () {
+  var webpack = require('webpack-stream')
+  var merge = require('webpack-merge')
   var config = require('./build/webpack.prod.conf')
-  var webpack = require('webpack')
 
-  webpack(config, function (err, stats) {
+  var feedbackFnc = function (err, stats) {
     if (err) {
       throw new gutil.PluginError('build', err)
     }
@@ -30,12 +31,16 @@ gulp.task('build', function (cb) {
     gutil.log('[build]', stats.toString({
       colors: true
     }))
+  }
 
-    cb()
-  })
+  return gulp.src('./src/index.js')
+    .pipe(webpack(config.unminified, null, feedbackFnc))
+    .pipe(gulp.dest('./dist'))
+    .pipe(webpack(config.minified, null, feedbackFnc))
+    .pipe(gulp.dest('./dist'))
 })
 
-// Run tests
+// Tests tasks
 gulp.task('test', [ 'test:unit' ])
 
 gulp.task('test:unit', function (cb) {
@@ -44,7 +49,7 @@ gulp.task('test:unit', function (cb) {
 })
 
 // Publish task
-gulp.task('publish', [ 'publish:bump', 'build', 'publish:git' ])
+gulp.task('publish', [ 'publish:bump', 'build', 'publish:git', 'publish:npm' ])
 
 gulp.task('publish:bump', function () {
   var argv = require('yargs').argv
@@ -82,7 +87,6 @@ gulp.task('publish:bump', function () {
 gulp.task('publish:git', ['build'], function () {
   var git = require('gulp-git')
   var through = require('through2')
-
   var version = require('./package.json').version
 
   return gulp.src('./package.json')
@@ -90,20 +94,17 @@ gulp.task('publish:git', ['build'], function () {
       args: `-am "release: ${version}"`,
       disableMessageRequirement: true
     }))
-    .pipe(git.tag(version, `release: ${version}`, function (err) {
-      if (err) {
-        throw err
-      }
+    .pipe(through.obj(function (file, enc, cb) {
+      git.tag(version, `release: ${version}`)
+      cb(null, file)
     }))
-    .pipe(git.push('origin', 'master', function (err) {
-      if (err) {
-        throw err
-      }
+    .pipe(through.obj(function (file, enc, cb) {
+      git.push('origin', 'master')
+      cb(null, file)
     }))
-    .pipe(git.push('origin', null, { args: '--tags' }, function (err) {
-      if (err) {
-        throw err
-      }
+    .pipe(through.obj(function (file, enc, cb) {
+      git.push('origin', null, { args: '--tags' })
+      cb(null, file)
     }))
 })
 

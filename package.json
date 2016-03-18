@@ -2,7 +2,7 @@
   "name": "vue-deepstream",
   "version": "0.0.0",
   "description": "Deepstream plugin for Vue.js",
-  "main": "src/index.js",
+  "main": "dist/vue-deepstream.js",
   "scripts": {
     "test": "gulp test"
   },
@@ -78,6 +78,7 @@
     "webpack-dev-server": "^1.14.1",
     "webpack-hot-middleware": "^2.10.0",
     "webpack-merge": "^0.8.3",
+    "webpack-stream": "^3.1.0",
     "yargs": "^4.3.1"
   }
 }
