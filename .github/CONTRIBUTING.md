@@ -25,12 +25,12 @@ Before you submit an issue search the archive. Your question might already have 
 </br></br>
 If your issue appears to be a bug that hasn't been reported, open a new issue and follow the provided template structure. If it doesn't fit your needs try to be as accurate as possible and provide use cases when necessary.
 </br></br>
-You can submit new issue [here](https://github.com/ealves-pt/ng-web-storage/issues/new).
+You can submit new issue [here](https://github.com/arexio/vue-deepstream/issues/new).
 
 ### Submit Pull Requests
 
 Before submit a Pull Request (PR) consider the following guidelines:
-* Search [here](https://github.com/ealves-pt/ng-web-storage/pulls) for open or closed PR similar to your submission
+* Search [here](https://github.com/arexio/vue-deepstream/pulls) for open or closed PR similar to your submission
 * Follow the [Development Process](#development-process)
 * Follow the [Coding Rules](#coding-rules)
 * Follow the [Commit Guidelines](#commit-guidelines)
@@ -41,7 +41,7 @@ Before submit a Pull Request (PR) consider the following guidelines:
 * Create a new branch `git checkout -b <branch-name>`
 * Code as much as you want but make sure you follow the [coding rules](#coding-rules)
 * Commit your changes using a [descriptive](#message-format) message. Avoid history pollution and submit only a commit (`rebase -i` is your friend)
-* Open a PR to `ealves-pt/ng-web-storage:master`
+* Open a PR to `arexio/vue-deepstream:master`
 * If changes are suggested then:
  * Make the require updates
  * Run the test suites again
