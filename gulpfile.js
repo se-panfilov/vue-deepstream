@@ -20,7 +20,6 @@ gulp.task('webpack-dev-server', function () {
 // Build tasks
 gulp.task('build', function () {
   var webpack = require('webpack-stream')
-  var merge = require('webpack-merge')
   var config = require('./build/webpack.prod.conf')
 
   var feedbackFnc = function (err, stats) {
