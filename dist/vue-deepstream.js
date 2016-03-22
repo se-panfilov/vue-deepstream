@@ -486,10 +486,37 @@ return /******/ (function(modules) { // webpackBootstrap
 	    var options = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
 
 	    options.init = options.init ? [dsInit].concat(options.init) : dsInit;
+
 	    _init.call(this, options);
 	  };
 
+	  var _destroy = Vue.prototype._destroy;
+	  Vue.prototype._destroy = function () {
+	    if (this.$_ds) {
+	      var _$_ds = this.$_ds;
+	      var on = _$_ds.on;
+	      var once = _$_ds.once;
+
+
+	      if (on) {
+	        for (var event in on) {
+	          this.$ds.client.off(event, on[event]);
+	        }
+	      }
+
+	      if (once) {
+	        for (var _event in once) {
+	          this.$ds.client.off(_event, once[_event]);
+	        }
+	      }
+	    }
+
+	    _destroy.apply(this, arguments);
+	  };
+
 	  function dsInit() {
+	    var _this2 = this;
+
 	    var options = this.$options;
 	    var deepstream = options.deepstream;
 	    var ds = options.ds;
@@ -501,52 +528,63 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }
 
 	    if (ds) {
-	      if (!this.$ds) {
-	        (0, _utils.warn)('deepstream not injected. Make sure to provide deepstream option in yout root component.');
-	      }
-
-	      var on = ds.on;
-	      var once = ds.once;
-	      var emit = ds.emit;
-
-
-	      if (on) {
-	        for (var event in on) {
-	          boundListener.call(this, 'on', event, on[event]);
+	      (function () {
+	        if (!_this2.$ds) {
+	          (0, _utils.warn)('deepstream not injected. Make sure to provide deepstream option in yout root component.');
 	        }
-	      }
 
-	      if (once) {
-	        for (var _event in once) {
-	          boundListener.call(this, 'once', _event, once[_event]);
-	        }
-	      }
+	        _this2.$_ds = {};
 
-	      if (emit) {
-	        options.methods = options.methods || {};
-	        for (var _event2 in emit) {
-	          options.methods[_event2] = makeBoundEmit(_event2, emit[_event2], this.$ds);
+	        var on = ds.on;
+	        var once = ds.once;
+	        var emit = ds.emit;
+
+	        var _this = _this2;
+
+	        if (on) {
+	          _this2.$_ds.on = {};
+
+	          var _loop = function _loop(event) {
+	            _this2.$_ds.on[event] = function () {
+	              on[event].apply(_this, arguments);
+	            };
+	            _this2.$ds.client.on(event, _this2.$_ds.on[event]);
+	          };
+
+	          for (var event in on) {
+	            _loop(event);
+	          }
 	        }
-	      }
+
+	        if (once) {
+	          _this2.$_ds.once = {};
+
+	          var _loop2 = function _loop2(_event2) {
+	            _this2.$_ds.once[_event2] = function () {
+	              once[_event2].apply(_this, arguments);
+	            };
+	            _this2.$ds.client.once(_event2, _this2.$_ds.once[_event2]);
+	          };
+
+	          for (var _event2 in once) {
+	            _loop2(_event2);
+	          }
+	        }
+
+	        if (emit) {
+	          options.methods = options.methods || {};
+	          for (var _event3 in emit) {
+	            options.methods[_event3] = makeBoundEmit(_event3, emit[_event3], _this2.$ds);
+	          }
+	        }
+	      })();
 	    }
-	  }
-
-	  function boundListener(listenerType, event, callback) {
-	    var _this = this;
-
-	    this.$ds.client[listenerType](event, function () {
-	      for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
-	        args[_key] = arguments[_key];
-	      }
-
-	      callback.call.apply(callback, [_this].concat(args));
-	    });
 	  }
 
 	  function makeBoundEmit(event, emit, ds) {
 	    return function boundEmit() {
-	      for (var _len2 = arguments.length, args = Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
-	        args[_key2] = arguments[_key2];
+	      for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
+	        args[_key] = arguments[_key];
 	      }
 
 	      var emitArgs = emit.call.apply(emit, [this].concat(args));
