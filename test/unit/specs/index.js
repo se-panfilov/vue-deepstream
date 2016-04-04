@@ -154,9 +154,9 @@ function subscriptionsAreCalled (...parameters) {
         }
       }).$mount()
       spyOn(vm.$children[0].$options.ds.once, 'toOnce').and.callThrough()
-      deepstream.client.emit('toOnce', ...parameters)
-      expect(vm.$children[0].$options.ds.once.toOnce).toHaveBeenCalledWith(...parameters)
-      expect(vm.$children[0].to).toEqual(parameters[0])
+      deepstream.client.emit.apply(deepstream.client, ['toOnce'].concat(parameters))
+      expect(vm.$children[0].$options.ds.once.toOnce).toHaveBeenCalled()
+      expect(vm.$children[0].$options.ds.once.toOnce.calls.argsFor(0)).toEqual(parameters)
     })
 
     it('\'on\' subscriptions should receive the correct number of parameters and the right parameters', function () {
@@ -168,9 +168,9 @@ function subscriptionsAreCalled (...parameters) {
         }
       }).$mount()
       spyOn(vm.$children[0].$options.ds.on, 'toOn').and.callThrough()
-      deepstream.client.emit('toOn', ...parameters)
-      expect(vm.$children[0].$options.ds.on.toOn).toHaveBeenCalledWith(...parameters)
-      expect(vm.$children[0].to).toEqual(parameters[0])
+      deepstream.client.emit.apply(deepstream.client, ['toOn'].concat(parameters))
+      expect(vm.$children[0].$options.ds.on.toOn).toHaveBeenCalled()
+      expect(vm.$children[0].$options.ds.on.toOn.calls.argsFor(0)).toEqual(parameters)
     })
   }
 }

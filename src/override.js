@@ -98,7 +98,7 @@ export default function (Vue) {
 
     function makeBoundEmit (event, emit, ds) {
       return function boundEmit (...args) {
-        const emitArgs = emit.call(_this, ...args)
+        const emitArgs = emit.apply(_this, args)
         ds.client.emit(event, emitArgs)
 
         return emitArgs
