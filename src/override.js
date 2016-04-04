@@ -32,6 +32,7 @@ export default function (Vue) {
   }
 
   function dsInit () {
+    const _this = this
     const options = this.$options
     const { deepstream, ds } = options
 
@@ -49,8 +50,12 @@ export default function (Vue) {
 
       this.$_ds = {}
 
-      let { on, once, emit } = ds
-      const _this = this
+      let { on, once, emit, rpc } = ds
+      let make, provide
+      if (rpc) {
+        make = rpc.make
+        provide = rpc.provide
+      }
 
       if (on) {
         this.$_ds.on = {}
@@ -78,15 +83,33 @@ export default function (Vue) {
           options.methods[event] = makeBoundEmit(event, emit[event], this.$ds)
         }
       }
+
+      if (make) {
+        options.methods = options.methods || {}
+        for (let rpc in make) {
+          options.methods[rpc] = makeBoundMake(rpc, make[rpc], this.$ds)
+        }
+      }
+
+      if (provide) {
+        // TODO implement feature later
+      }
     }
-  }
 
-  function makeBoundEmit (event, emit, ds) {
-    return function boundEmit (...args) {
-      const emitArgs = emit.call(this, ...args)
-      ds.client.emit(event, emitArgs)
+    function makeBoundEmit (event, emit, ds) {
+      return function boundEmit (...args) {
+        const emitArgs = emit.call(_this, ...args)
+        ds.client.emit(event, emitArgs)
 
-      return emitArgs
+        return emitArgs
+      }
+    }
+
+    function makeBoundMake (rpc, fn, ds) {
+      return function boundMake (data) {
+        data = data || {}
+        ds.client.rpc.make(rpc, data, (e, r) => { fn.call(_this, e, r) })
+      }
     }
   }
 }
