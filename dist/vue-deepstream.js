@@ -372,7 +372,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	          args[_key] = arguments[_key];
 	        }
 
-	        var emitArgs = emit.call.apply(emit, [_this].concat(args));
+	        var emitArgs = emit.apply(_this, args);
 	        ds.client.emit(event, emitArgs);
 
 	        return emitArgs;
