@@ -7,6 +7,43 @@ let deepstream
 let Foo
 let Bar
 
+function mountFoo () {
+  const vm = new Vue({
+    deepstream,
+    template: '<div><foo v-ref:foo></foo></div>',
+    components: {
+      Foo
+    }
+  }).$mount()
+
+  return vm
+}
+
+function mountBar () {
+  const vm = new Vue({
+    deepstream,
+    template: '<div><bar v-ref:bar></bar></div>',
+    components: {
+      Bar
+    }
+  }).$mount()
+
+  return vm
+}
+
+function mountFooBar () {
+  const vm = new Vue({
+    deepstream,
+    template: '<div><foo v-ref:foo></foo><bar v-ref:bar></bar></div>',
+    components: {
+      Foo,
+      Bar
+    }
+  }).$mount()
+
+  return vm
+}
+
 describe('VueDeepstream', () => {
   beforeEach(() => {
     Foo = require('./Foo')
@@ -24,113 +61,68 @@ describe('VueDeepstream', () => {
   })
 
   it('should inject $ds into child components', function () {
-    const vm = new Vue({
-      deepstream,
-      template: '<div><foo></foo></div>',
-      components: {
-        Foo
-      }
-    }).$mount()
+    const vm = mountFoo()
 
     expect(vm.$ds).toBeDefined()
-    expect(vm.$children[0].$ds).toBeDefined()
+    expect(vm.$refs.foo.$ds).toBeDefined()
   })
 
   it('should create a wrapper function for every \'on\' and \'once\' subscribed event', function () {
-    const vm = new Vue({
-      deepstream,
-      template: '<div><bar></bar></div>',
-      components: {
-        Bar
-      }
-    }).$mount()
+    const vm = mountBar()
 
-    expect(vm.$children[0].$_ds).toBeDefined()
-    expect(vm.$children[0].$options.ds.on.length).toBe(vm.$children[0].$_ds.on.length)
-    expect(vm.$children[0].$options.ds.once.length).toBe(vm.$children[0].$_ds.once.length)
+    expect(vm.$refs.bar.$_ds).toBeDefined()
+    expect(vm.$refs.bar.$options.ds.on.length).toBe(vm.$refs.bar.$_ds.on.length)
+    expect(vm.$refs.bar.$options.ds.once.length).toBe(vm.$refs.bar.$_ds.once.length)
   })
 
   it('should trigger subscribed \'on\' events correctly', function () {
-    const vm = new Vue({
-      deepstream,
-      template: '<div><foo></foo></div>',
-      components: {
-        Foo
-      }
-    }).$mount()
+    const vm = mountFoo()
 
-    expect(vm.$children[0].counter).toEqual(0)
+    expect(vm.$refs.foo.counter).toEqual(0)
     deepstream.client.emit('foo')
     deepstream.client.emit('foo')
-    expect(vm.$children[0].counter).toEqual(2)
+    expect(vm.$refs.foo.counter).toEqual(2)
   })
 
   it('should trigger subscribed \'once\' events correctly', function () {
-    const vm = new Vue({
-      deepstream,
-      template: '<div><bar></bar></div>',
-      components: {
-        Bar
-      }
-    }).$mount()
+    const vm = mountBar()
 
-    expect(vm.$children[0].counter).toEqual(0)
+    expect(vm.$refs.bar.counter).toEqual(0)
     deepstream.client.emit('bar')
     deepstream.client.emit('bar')
-    expect(vm.$children[0].counter).toEqual(-1)
+    expect(vm.$refs.bar.counter).toEqual(-1)
   })
 
   it('should trigger subscribed \'on\' events on several objects', function () {
-    const vm = new Vue({
-      deepstream,
-      template: '<div><foo></foo><bar></bar></div>',
-      components: {
-        Foo,
-        Bar
-      }
-    }).$mount()
+    const vm = mountFooBar()
 
-    expect(vm.$children[0].counter).toEqual(0)
-    expect(vm.$children[1].counter).toEqual(0)
+    expect(vm.$refs.foo.counter).toEqual(0)
+    expect(vm.$refs.bar.counter).toEqual(0)
     deepstream.client.emit('foo')
     deepstream.client.emit('foo')
-    expect(vm.$children[0].counter).toEqual(2)
-    expect(vm.$children[1].counter).toEqual(2)
+    expect(vm.$refs.foo.counter).toEqual(2)
+    expect(vm.$refs.bar.counter).toEqual(2)
   })
 
   it('should trigger multiple subscribed events correctly', function () {
-    const vm = new Vue({
-      deepstream,
-      template: '<div><foo></foo><bar></bar></div>',
-      components: {
-        Foo,
-        Bar
-      }
-    }).$mount()
+    const vm = mountFooBar()
 
-    expect(vm.$children[0].counter).toEqual(0)
-    expect(vm.$children[1].counter).toEqual(0)
+    expect(vm.$refs.foo.counter).toEqual(0)
+    expect(vm.$refs.bar.counter).toEqual(0)
     deepstream.client.emit('foo')
     deepstream.client.emit('foo')
     deepstream.client.emit('bar')
     deepstream.client.emit('foo')
     deepstream.client.emit('bar')
-    expect(vm.$children[0].counter).toEqual(3)
-    expect(vm.$children[1].counter).toEqual(2)
+    expect(vm.$refs.foo.counter).toEqual(3)
+    expect(vm.$refs.bar.counter).toEqual(2)
   })
 
   it('should unsubscribe events when object is destroyed', function () {
-    const vm = new Vue({
-      deepstream,
-      template: '<div><foo></foo><bar></bar></div>',
-      components: {
-        Foo,
-        Bar
-      }
-    }).$mount()
+    const vm = mountFooBar()
 
     expect(deepstream.client.listeners('foo').length).toEqual(2)
-    vm.$children[0].$destroy()
+    vm.$refs.foo.$destroy()
     expect(deepstream.client.listeners('foo').length).toEqual(1)
   })
 
@@ -146,31 +138,21 @@ describe('VueDeepstream', () => {
 function subscriptionsAreCalled (...parameters) {
   return function () {
     it('\'once\' subscriptions should receive the correct number of parameters and the right parameters', function () {
-      const vm = new Vue({
-        deepstream,
-        template: '<div><foo></foo></div>',
-        components: {
-          Foo
-        }
-      }).$mount()
-      spyOn(vm.$children[0].$options.ds.once, 'toOnce').and.callThrough()
+      const vm = mountFoo()
+
+      spyOn(vm.$refs.foo.$options.ds.once, 'toOnce').and.callThrough()
       deepstream.client.emit.apply(deepstream.client, ['toOnce'].concat(parameters))
-      expect(vm.$children[0].$options.ds.once.toOnce).toHaveBeenCalled()
-      expect(vm.$children[0].$options.ds.once.toOnce.calls.argsFor(0)).toEqual(parameters)
+      expect(vm.$refs.foo.$options.ds.once.toOnce).toHaveBeenCalled()
+      expect(vm.$refs.foo.$options.ds.once.toOnce.calls.argsFor(0)).toEqual(parameters)
     })
 
     it('\'on\' subscriptions should receive the correct number of parameters and the right parameters', function () {
-      const vm = new Vue({
-        deepstream,
-        template: '<div><foo></foo></div>',
-        components: {
-          Foo
-        }
-      }).$mount()
-      spyOn(vm.$children[0].$options.ds.on, 'toOn').and.callThrough()
+      const vm = mountFoo()
+
+      spyOn(vm.$refs.foo.$options.ds.on, 'toOn').and.callThrough()
       deepstream.client.emit.apply(deepstream.client, ['toOn'].concat(parameters))
-      expect(vm.$children[0].$options.ds.on.toOn).toHaveBeenCalled()
-      expect(vm.$children[0].$options.ds.on.toOn.calls.argsFor(0)).toEqual(parameters)
+      expect(vm.$refs.foo.$options.ds.on.toOn).toHaveBeenCalled()
+      expect(vm.$refs.foo.$options.ds.on.toOn.calls.argsFor(0)).toEqual(parameters)
     })
   }
 }
