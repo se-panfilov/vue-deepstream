@@ -109,7 +109,7 @@ gulp.task('publish:git', ['build'], function () {
 gulp.task('publish:npm', ['publish:git'], function (cb) {
   var exec = require('child_process').exec
 
-  exec('npm publish', function (err) {
+  exec('npm publish', function (err, stdout, stderr) {
     if (stdout) {
       console.log(stdout)
     }
