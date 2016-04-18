@@ -80,14 +80,14 @@ export default function (Vue) {
       if (emit) {
         options.methods = options.methods || {}
         for (let event in emit) {
-          options.methods[event] = makeBoundEmit(event, emit[event], this.$ds)
+          options.methods[event] = buildBoundEmit(event, emit[event], this.$ds)
         }
       }
 
       if (make) {
         options.methods = options.methods || {}
         for (let rpc in make) {
-          options.methods[rpc] = makeBoundMake(rpc, make[rpc], this.$ds)
+          options.methods[rpc] = buildBoundMake(rpc, make[rpc], this.$ds)
         }
       }
 
@@ -96,7 +96,7 @@ export default function (Vue) {
       }
     }
 
-    function makeBoundEmit (event, emit, ds) {
+    function buildBoundEmit (event, emit, ds) {
       return function boundEmit (...args) {
         const emitArgs = emit.apply(_this, args)
         ds.client.emit(event, emitArgs)
@@ -105,7 +105,7 @@ export default function (Vue) {
       }
     }
 
-    function makeBoundMake (rpc, fn, ds) {
+    function buildBoundMake (rpc, fn, ds) {
       return function boundMake (data) {
         data = data || {}
         ds.client.rpc.make(rpc, data, (e, r) => { fn.call(_this, e, r) })

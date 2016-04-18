@@ -1,7 +1,6 @@
 var path = require('path')
 var gulp = require('gulp')
 var gutil = require('gulp-util')
-var shell = require('gulp-shell')
 
 // The development server
 gulp.task('default', ['webpack-dev-server'])
@@ -107,4 +106,17 @@ gulp.task('publish:git', ['build'], function () {
     }))
 })
 
-gulp.task('publish:npm', ['publish:git'], shell.task([ 'npm publish' ]))
+gulp.task('publish:npm', ['publish:git'], function (cb) {
+  var exec = require('child_process').exec
+
+  exec('npm publish', function (err) {
+    if (stdout) {
+      console.log(stdout)
+    }
+    if (stderr) {
+      console.log(stderr)
+    }
+
+    cb(err)
+  })
+})

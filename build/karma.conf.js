@@ -37,9 +37,10 @@ module.exports = function (config) {
     browsers: [ 'PhantomJS' ],
     reporters: [ 'spec', 'coverage' ],
     frameworks: [ 'jasmine' ],
-    files: [ '../test/unit/specs/index.js' ],
+    files: [ '../test/unit/specs/index.js', '../test/unit/specs/**/*-spec.js' ],
     preprocessors: {
-      '../test/unit/specs/index.js': [ 'webpack', 'sourcemap' ]
+      '../test/unit/specs/index.js': [ 'webpack', 'sourcemap' ],
+      '../test/unit/specs/**/*-spec.js': [ 'webpack', 'sourcemap' ]
     },
     webpack: webpackConfig,
     webpackMiddleware: {

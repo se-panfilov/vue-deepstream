@@ -4,7 +4,7 @@ import override from './override'
 
 let Vue
 
-class Deepstream {
+class VueDeepstream {
   constructor ({
     host = 'localhost',
     port = 8745
@@ -26,10 +26,10 @@ class Deepstream {
   }
 }
 
-Deepstream.installed = false
+VueDeepstream.installed = false
 
-Deepstream.install = function (_Vue) {
-  if (Deepstream.installed) {
+VueDeepstream.install = function (_Vue) {
+  if (VueDeepstream.installed) {
     warn('already installed')
     return
   }
@@ -37,12 +37,12 @@ Deepstream.install = function (_Vue) {
   Vue = _Vue
   util.Vue = Vue
   override(Vue)
-  Deepstream.installed = true
+  VueDeepstream.installed = true
 }
 
 // auto install
 if (typeof window !== 'undefined' && window.Vue) {
-  window.Vue.use(Deepstream)
+  window.Vue.use(VueDeepstream)
 }
 
-export default Deepstream
+export default VueDeepstream
