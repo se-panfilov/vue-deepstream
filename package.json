@@ -1,6 +1,6 @@
 {
   "name": "vue-deepstream",
-  "version": "0.0.1-beta.3",
+  "version": "0.0.1-beta.4",
   "description": "Deepstream plugin for Vue.js",
   "main": "dist/vue-deepstream.js",
   "scripts": {

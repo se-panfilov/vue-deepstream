@@ -84,15 +84,15 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var Vue = void 0;
 
-	var Deepstream = function () {
-	  function Deepstream() {
+	var VueDeepstream = function () {
+	  function VueDeepstream() {
 	    var _ref = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
 
 	    var _ref$host = _ref.host;
 	    var host = _ref$host === undefined ? 'localhost' : _ref$host;
 	    var _ref$port = _ref.port;
 	    var port = _ref$port === undefined ? 8745 : _ref$port;
-	    (0, _classCallCheck3.default)(this, Deepstream);
+	    (0, _classCallCheck3.default)(this, VueDeepstream);
 
 	    if (!Vue) {
 	      throw new Error('[vue-deepstream] must call Vue.use(VueDeepstream) before creating an instance.');
@@ -103,7 +103,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    this.client = null;
 	  }
 
-	  (0, _createClass3.default)(Deepstream, [{
+	  (0, _createClass3.default)(VueDeepstream, [{
 	    key: 'connect',
 	    value: function connect() {
 	      this.client = (0, _deepstream2.default)(this.host + ':' + this.port);
@@ -111,13 +111,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	      return this;
 	    }
 	  }]);
-	  return Deepstream;
+	  return VueDeepstream;
 	}();
 
-	Deepstream.installed = false;
+	VueDeepstream.installed = false;
 
-	Deepstream.install = function (_Vue) {
-	  if (Deepstream.installed) {
+	VueDeepstream.install = function (_Vue) {
+	  if (VueDeepstream.installed) {
 	    (0, _utils.warn)('already installed');
 	    return;
 	  }
@@ -125,14 +125,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	  Vue = _Vue;
 	  _utils2.default.Vue = Vue;
 	  (0, _override2.default)(Vue);
-	  Deepstream.installed = true;
+	  VueDeepstream.installed = true;
 	};
 
 	if (typeof window !== 'undefined' && window.Vue) {
-	  window.Vue.use(Deepstream);
+	  window.Vue.use(VueDeepstream);
 	}
 
-	exports.default = Deepstream;
+	exports.default = VueDeepstream;
 
 /***/ },
 /* 1 */
@@ -351,14 +351,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	        if (emit) {
 	          options.methods = options.methods || {};
 	          for (var _event3 in emit) {
-	            options.methods[_event3] = makeBoundEmit(_event3, emit[_event3], _this2.$ds);
+	            options.methods[_event3] = buildBoundEmit(_event3, emit[_event3], _this2.$ds);
 	          }
 	        }
 
 	        if (make) {
 	          options.methods = options.methods || {};
 	          for (var _rpc in make) {
-	            options.methods[_rpc] = makeBoundMake(_rpc, make[_rpc], _this2.$ds);
+	            options.methods[_rpc] = buildBoundMake(_rpc, make[_rpc], _this2.$ds);
 	          }
 	        }
 
@@ -366,7 +366,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	      })();
 	    }
 
-	    function makeBoundEmit(event, emit, ds) {
+	    function buildBoundEmit(event, emit, ds) {
 	      return function boundEmit() {
 	        for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
 	          args[_key] = arguments[_key];
@@ -379,7 +379,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	      };
 	    }
 
-	    function makeBoundMake(rpc, fn, ds) {
+	    function buildBoundMake(rpc, fn, ds) {
 	      return function boundMake(data) {
 	        data = data || {};
 	        ds.client.rpc.make(rpc, data, function (e, r) {
